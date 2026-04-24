@@ -1,12 +1,13 @@
 {
-  "name": "sofa-proxy",
+  "name": "sofascore-proxy",
   "version": "1.0.0",
+  "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.18.0",
-    "node-fetch": "^2.6.7"
+    "axios": "^1.6.0",
+    "express": "^4.19.0"
   }
 }
