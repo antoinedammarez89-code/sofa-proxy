@@ -22,11 +22,14 @@ async function sofaFetch(url) {
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
       "Accept": "application/json, text/plain, */*",
       "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8",
-      "Referer": "https://www.sofascore.com/"
+      "Referer": "https://www.sofascore.com/",
+      "Accept-Encoding": "gzip, deflate, br"
     },
-    timeout: 8000
+    timeout: 10000,
+    validateStatus: () => true // 🔥 IMPORTANT
   });
 }
+
 
 // ✅ Live matches
 app.get("/api/live", async (req, res) => {
@@ -86,18 +89,17 @@ app.get("/api/incidents/:id", async (req, res) => {
 app.get("/api/v1/*", async (req, res) => {
   const targetPath = req.originalUrl.replace("/api", "");
 
-  try {
-    const r = await sofaFetch(
-      "https://www.sofascore.com" + targetPath
-    );
-    res.json(r.data);
-  } catch (e) {
-    console.error("Proxy error:", targetPath, e.message);
-    res.status(502).json({
-      error: "SofaScore fetch failed",
-      path: targetPath
-    });
-  }
+  const r = await sofaFetch(
+    "https://www.sofascore.com" + targetPath
+  );
+
+  console.log("STATUS", r.status);
+  console.log("DATA", typeof r.data === "string"
+    ? r.data.substring(0, 300)
+    : r.data
+  );
+
+  res.status(r.status).json(r.data);
 });
 
 
