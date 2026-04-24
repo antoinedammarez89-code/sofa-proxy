@@ -82,6 +82,24 @@ app.get("/api/incidents/:id", async (req, res) => {
     res.status(502).json({ error: "incidents failed" });
   }
 });
+// ✅ Proxy générique SofaScore (tous les endpoints API)
+app.get("/api/v1/*", async (req, res) => {
+  const targetPath = req.originalUrl.replace("/api", "");
+
+  try {
+    const r = await sofaFetch(
+      "https://www.sofascore.com" + targetPath
+    );
+    res.json(r.data);
+  } catch (e) {
+    console.error("Proxy error:", targetPath, e.message);
+    res.status(502).json({
+      error: "SofaScore fetch failed",
+      path: targetPath
+    });
+  }
+});
+
 
 app.listen(PORT, () =>
   console.log("✅ SofaScore proxy running on port", PORT)
